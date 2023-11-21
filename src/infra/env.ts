@@ -15,7 +15,7 @@ function requiredOnEnv(env: z.infer<typeof nodeEnv>) {
 
 const envSchema = z.object({
   NODE_ENV: nodeEnv.default('development'),
-  PORT: z.number().default(3030),
+  port: z.number().default(3030),
   DATABASE_URL: z.string().min(1),
   JWT_SECRET: z.string().min(1),
   AWS_S3_BUCKET: z.string().min(1),
