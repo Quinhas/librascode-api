@@ -1,14 +1,15 @@
 import { NestFactory } from '@nestjs/core';
 
+import { env } from '@infra/env';
 import { AppModule } from 'src/app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
-    cors: { origin: ['http://localhost:5173', 'http://localhost:5174'] },
+    cors: { origin: ['*'] },
   });
 
-  await app.listen(3030);
+  await app.listen(env.PORT);
 
-  console.log(`Server is running on http://localhost:${3030}`);
+  console.log(`Server is running on port ${env.PORT}`);
 }
 bootstrap();
