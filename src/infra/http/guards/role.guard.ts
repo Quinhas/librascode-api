@@ -33,6 +33,9 @@ export class RoleGuard implements CanActivate {
 
     const matchRoles = this.matchRoles(roles, user.roles);
 
+    console.log(roles);
+    console.log(user.roles);
+
     if (!matchRoles) {
       throw new AppException({
         statusCode: HttpStatus.FORBIDDEN,

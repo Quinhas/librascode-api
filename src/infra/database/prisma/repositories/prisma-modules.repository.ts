@@ -62,7 +62,28 @@ export class PrismaModulesRepository implements IModulesRepository {
   }
 
   async update({ data, where }: IModulesRepositoryUpdate): Promise<void> {
-    const prismaModuleData = PrismaModuleMapper.toPrisma(data);
-    await this.prisma.module.update({ data: prismaModuleData, where });
+    await this.prisma.module.update({
+      data: {
+        name: data.name,
+        isPublished: data.isPublished,
+        updatedAt: data.updatedAt,
+        signs: {
+          deleteMany: (data.signs?.deleteMany ?? []).map((sign) => ({
+            moduleId: data.id,
+            signId: sign.id,
+          })),
+          createMany: {
+            data: (data.signs?.createMany ?? []).map((sign) => ({
+              signId: sign.id,
+              createdAt: new Date(),
+              updatedAt: null,
+              deletedAt: null,
+            })),
+            skipDuplicates: true,
+          },
+        },
+      },
+      where,
+    });
   }
 }

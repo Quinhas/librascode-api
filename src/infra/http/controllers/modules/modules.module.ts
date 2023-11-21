@@ -3,6 +3,7 @@ import { Module } from '@nestjs/common';
 import { CreateModuleUseCase } from '@app/use-cases/modules/create-module.use-case';
 import { GetModuleByIdUseCase } from '@app/use-cases/modules/get-module-by-id.use-case';
 import { ListModulesUseCase } from '@app/use-cases/modules/list-modules.use-case';
+import { UpdateModuleUseCase } from '@app/use-cases/modules/update-module.use-case';
 import { S3FileService } from '@infra/services/file/s3-file.service';
 
 import { ModulesController } from './modules.controller';
@@ -14,6 +15,7 @@ import { ModulesController } from './modules.controller';
     GetModuleByIdUseCase,
     ListModulesUseCase,
     CreateModuleUseCase,
+    UpdateModuleUseCase,
     { provide: 'FileService', useClass: S3FileService },
   ],
   exports: [],

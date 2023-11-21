@@ -25,6 +25,18 @@ export interface IModuleSignsRepositoryUpdate {
   data: IModuleSigns;
 }
 
+export interface IModuleSignsRepositoryDelete {
+  where: {
+    id: string;
+  };
+}
+
+export interface IModuleSignsRepositoryDeleteMany {
+  where: {
+    id: string[];
+  };
+}
+
 export interface IModuleSignsRepository {
   findFirst(
     params: IModuleSignsRepositoryFindFirst,
@@ -32,4 +44,6 @@ export interface IModuleSignsRepository {
   findMany(params?: IModuleSignsRepositoryFindMany): Promise<IModuleSigns[]>;
   create(params: IModuleSignsRepositoryCreate): Promise<void>;
   update(params: IModuleSignsRepositoryUpdate): Promise<void>;
+  delete(params: IModuleSignsRepositoryDelete): Promise<void>;
+  deleteMany(params: IModuleSignsRepositoryDeleteMany): Promise<void>;
 }

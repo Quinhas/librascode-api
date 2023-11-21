@@ -1,6 +1,7 @@
 import { Prisma } from '@prisma/client';
 
 import { IModule } from '@app/entities/module.entity';
+import { ISign } from '@app/entities/sign.entity';
 
 type Where = Prisma.ModuleWhereInput;
 
@@ -18,11 +19,18 @@ export interface IModulesRepositoryCreate {
   data: IModule;
 }
 
+type IUpdate = Omit<Partial<IModule>, 'signs'> & {
+  signs?: {
+    deleteMany?: ISign[];
+    createMany?: ISign[];
+  };
+};
+
 export interface IModulesRepositoryUpdate {
   where: {
     id: string;
   };
-  data: IModule;
+  data: IUpdate;
 }
 
 export interface IModulesRepository {

@@ -28,6 +28,6 @@ export interface ISignsRepositoryUpdate {
 
 export interface ISignsRepository {
   findFirst(params: ISignsRepositoryFindFirst): Promise<ISign | null>;
-  findMany(): Promise<ISign[]>;
+  findMany(params?: ISignsRepositoryFindMany): Promise<ISign[]>;
   create(params: ISignsRepositoryCreate): Promise<void>;
 }

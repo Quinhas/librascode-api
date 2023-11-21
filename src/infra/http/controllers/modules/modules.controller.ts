@@ -6,6 +6,7 @@ import {
   HttpStatus,
   Param,
   Post,
+  Put,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
@@ -17,6 +18,7 @@ import { IUserRoles } from '@app/enums/user-roles.enum';
 import { CreateModuleUseCase } from '@app/use-cases/modules/create-module.use-case';
 import { GetModuleByIdUseCase } from '@app/use-cases/modules/get-module-by-id.use-case';
 import { ListModulesUseCase } from '@app/use-cases/modules/list-modules.use-case';
+import { UpdateModuleUseCase } from '@app/use-cases/modules/update-module.use-case';
 import {
   CreateModuleRequest,
   createModuleRequestSchema,
@@ -25,6 +27,12 @@ import {
   GetModuleByIdParams,
   GetModuleByIdParamsSchema,
 } from '@contracts/modules/get-module-by-id.contract';
+import {
+  UpdateModuleDto,
+  UpdateModuleDtoSchema,
+  UpdateModuleParams,
+  UpdateModuleParamsSchema,
+} from '@contracts/modules/update-module.contract';
 import { Roles } from '@infra/http/decorators/roles.decorator';
 import { ZodValidationPipe } from '@infra/http/pipes/zod-validation.pipe';
 import { ModuleViewModel } from '@infra/http/view-models/module.view-model';
@@ -35,6 +43,7 @@ export class ModulesController {
     private readonly getModuleById: GetModuleByIdUseCase,
     private readonly createModule: CreateModuleUseCase,
     private readonly listModules: ListModulesUseCase,
+    private readonly updateModule: UpdateModuleUseCase,
   ) {}
 
   @Get()
@@ -68,7 +77,6 @@ export class ModulesController {
     // eslint-disable-next-line no-undef
     @UploadedFile() thumbnail: Express.Multer.File,
   ) {
-    console.log(thumbnail);
     const { name, isPublished, signs } = body;
 
     const module = await this.createModule.execute({
@@ -78,6 +86,30 @@ export class ModulesController {
         signs,
         thumbnail,
       },
+    });
+
+    return ModuleViewModel.toHTTP(module);
+  }
+
+  @Put('/:id')
+  @HttpCode(HttpStatus.OK)
+  @Roles([IUserRoles.ADMIN, IUserRoles.MODERATOR])
+  async update(
+    @Body(new ZodValidationPipe(UpdateModuleDtoSchema))
+    body: UpdateModuleDto,
+    @Param(new ZodValidationPipe(UpdateModuleParamsSchema))
+    params: UpdateModuleParams,
+  ) {
+    const { name, isPublished, signs } = body;
+    const { id } = params;
+
+    const module = await this.updateModule.execute({
+      data: {
+        name,
+        isPublished: Boolean(isPublished),
+        signs,
+      },
+      where: { id },
     });
 
     return ModuleViewModel.toHTTP(module);
