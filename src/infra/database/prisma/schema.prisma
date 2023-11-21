@@ -1,0 +1,107 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Sign {
+  id          String  @db.Uuid
+  name        String
+  imageUrl    String  @map("image_url")
+  isPublished Boolean @map("is_published")
+
+  createdAt DateTime  @map("created_at")
+  updatedAt DateTime? @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  modules     ModuleSigns[]
+  favoritedBy UserFavoriteSigns[]
+
+  @@id([id], map: "pk_signs")
+  @@map("signs")
+}
+
+model Module {
+  id           String  @db.Uuid
+  name         String
+  thumbnailUrl String  @map("thumbnail_url")
+  isPublished  Boolean @map("is_published")
+
+  createdAt DateTime  @map("created_at")
+  updatedAt DateTime? @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  signs ModuleSigns[]
+
+  favoritedBy UserFavoriteModules[]
+
+  @@id([id], map: "pk_modules")
+  @@map("modules")
+}
+
+model ModuleSigns {
+  module   Module @relation(fields: [moduleId], references: [id])
+  moduleId String @map("module_id") @db.Uuid
+  sign     Sign   @relation(fields: [signId], references: [id])
+  signId   String @map("sign_id") @db.Uuid
+
+  createdAt DateTime  @map("created_at")
+  updatedAt DateTime? @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  @@id([moduleId, signId], map: "pk_module_signs")
+  @@map("module_signs")
+}
+
+model User {
+  id         String     @db.Uuid
+  name       String     @db.VarChar(255)
+  email      String     @db.VarChar(255)
+  password   String     @db.VarChar
+  isDisabled Boolean    @default(false) @map("is_disabled")
+  roles      UserRole[]
+
+  createdAt DateTime  @map("created_at")
+  updatedAt DateTime? @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  favoriteModules UserFavoriteModules[]
+  favoriteSigns   UserFavoriteSigns[]
+
+  @@id([id], map: "pk_users")
+  @@map("users")
+}
+
+model UserFavoriteModules {
+  userId   String @map("user_id") @db.Uuid
+  user     User   @relation(fields: [userId], references: [id])
+  module   Module @relation(fields: [moduleId], references: [id])
+  moduleId String @map("module_id") @db.Uuid
+
+  @@id([moduleId, userId])
+  @@map("user_favorite_modules")
+}
+
+model UserFavoriteSigns {
+  userId String @map("user_id") @db.Uuid
+  user   User   @relation(fields: [userId], references: [id])
+  sign   Sign   @relation(fields: [signId], references: [id])
+  signId String @map("sign_id") @db.Uuid
+
+  @@id([signId, userId])
+  @@map("user_favorite_signs")
+}
+
+enum UserRole {
+  USER
+  MODERATOR
+  ADMIN
+
+  @@map("user_roles")
+}
